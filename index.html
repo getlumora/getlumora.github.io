@@ -53,6 +53,14 @@
   .btn.big { height: 56px; padding: 0 28px; font-size: 16.5px; border-radius: 14px; }
   .btn svg { width: 20px; height: 20px; }
   nav .btn { height: 38px; padding: 0 16px; font-size: 14px; }
+  .btn.soon { background: transparent; border: 1px dashed var(--line2); color: var(--muted); cursor: default; overflow: visible; }
+  .btn.soon:hover { transform: none; background: rgba(255,255,255,.03); color: var(--text); }
+  .btn.soon .pill { height: 22px; padding: 0 9px; border-radius: 11px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; display: inline-flex; align-items: center;
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), .22), rgba(215,180,255,.22)); color: var(--accent); }
+  .btn.soon::before { content: "We're working on it – stay tuned!"; position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translate(-50%, 6px); white-space: nowrap;
+    padding: 8px 12px; border-radius: 10px; background: #161a26; border: 1px solid var(--line2); color: var(--text); font-size: 13px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity .25s, transform .3s var(--spring); }
+  .btn.soon:hover::before, .btn.soon.tip::before { opacity: 1; transform: translate(-50%, 0); }
+  .cta.center { justify-content: center; }
 
   /* ---------- hero ---------- */
   header.hero { padding: 56px 0 40px; }
@@ -225,7 +233,7 @@
       <p class="sub fade-in" style="animation-delay:.25s">Lumora runs several Roblox accounts at the same time – each in its own tab, in one clean window. With split screen, party join, themes and an app lock.</p>
       <div class="cta fade-in" style="animation-delay:.35s">
         <a class="btn primary big" data-dl href="#"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download for Windows</a>
-        <a class="btn big" href="#showcase">Take the tour</a>
+        <button type="button" class="btn big soon" data-soon><svg viewBox="0 0 24 24"><path d="M12 3c-2.2 0-3.6 1.9-3.6 4.4 0 1.2.3 2-.4 3.2C6.6 12.8 5 15 5 17.2c0 1 .5 1.6 1.2 1.9L8 20h8l1.8-.9c.7-.3 1.2-.9 1.2-1.9 0-2.2-1.6-4.4-3-6.6-.7-1.2-.4-2-.4-3.2C15.6 4.9 14.2 3 12 3z"/><path d="M10.6 7.2h.01M13.4 7.2h.01"/><path d="M11 9.2h2l-1 1z"/><path d="M9.5 13.5c0 2.5 1.1 4 2.5 4s2.5-1.5 2.5-4"/></svg>Linux<span class="pill">Soon</span></button>
       </div>
       <div class="meta fade-in" style="animation-delay:.45s">
         <span><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>Free</span>
@@ -316,7 +324,7 @@
         <details class="rv"><summary>Is it safe? What happens to my login?</summary><p>You sign in on Roblox's own login page. Lumora stores the resulting session only on your PC, encrypted with your Windows account – it is never sent anywhere else. You can additionally lock Lumora with Windows Hello or a PIN.</p></details>
         <details class="rv"><summary>Is this a cheat or an exploit?</summary><p>No. Lumora doesn't modify Roblox, inject anything into games or automate gameplay. It starts the normal Roblox client for each account and arranges the windows.</p></details>
         <details class="rv"><summary>Is this allowed by Roblox?</summary><p>Lumora is an independent tool and not affiliated with or endorsed by Roblox Corporation. Running several Roblox clients isn't an officially supported feature, so use it at your own discretion and always follow Roblox's Terms of Use.</p></details>
-        <details class="rv"><summary>Which systems are supported?</summary><p>Windows 10 and 11 (64-bit) with the Roblox app installed. Mac and mobile are not supported.</p></details>
+        <details class="rv"><summary>Which systems are supported?</summary><p>Windows 10 and 11 (64-bit) with the Roblox app installed. A Linux version is coming soon. Mac and mobile are not supported.</p></details>
         <details class="rv"><summary>How many accounts can I run?</summary><p>As many as your PC can handle. Tabs you aren't looking at use much less CPU and memory thanks to power-saving mode.</p></details>
         <details class="rv"><summary>Windows says "unknown publisher" – why?</summary><p>Lumora is a young project and isn't code-signed yet, so Windows SmartScreen may warn you the first time. Click "More info" → "Run anyway". Only download Lumora from this page.</p></details>
       </div>
@@ -333,7 +341,8 @@
     <img class="logo" src="img/logo.png" alt="" width="64" height="64">
     <h2>Play together. On one screen.</h2>
     <p>Download Lumora for free and set it up in a minute.</p>
-    <a class="btn primary big" data-dl href="#"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download for Windows</a>
+    <div class="cta center"><a class="btn primary big" data-dl href="#"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download for Windows</a>
+    <button type="button" class="btn big soon" data-soon><svg viewBox="0 0 24 24"><path d="M12 3c-2.2 0-3.6 1.9-3.6 4.4 0 1.2.3 2-.4 3.2C6.6 12.8 5 15 5 17.2c0 1 .5 1.6 1.2 1.9L8 20h8l1.8-.9c.7-.3 1.2-.9 1.2-1.9 0-2.2-1.6-4.4-3-6.6-.7-1.2-.4-2-.4-3.2C15.6 4.9 14.2 3 12 3z"/><path d="M10.6 7.2h.01M13.4 7.2h.01"/><path d="M11 9.2h2l-1 1z"/><path d="M9.5 13.5c0 2.5 1.1 4 2.5 4s2.5-1.5 2.5-4"/></svg>Linux<span class="pill">Soon</span></button></div>
   </div>
 </div>
 
@@ -347,6 +356,7 @@
 <script>
   const DL = "https://github.com/Anarqium/lumora-releases/releases/latest/download/Lumora-Setup.exe";
   document.querySelectorAll("[data-dl]").forEach(a => (a.href = DL));
+  document.querySelectorAll("[data-soon]").forEach(b => b.addEventListener("click", () => { b.classList.add("tip"); setTimeout(() => b.classList.remove("tip"), 1800); }));
   const esc = s => String(s || "").replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
 
   // version + changelog straight from GitHub (no other third parties)
