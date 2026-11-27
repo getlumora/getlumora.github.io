@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumora – Multiple Roblox accounts, side by side</title>
+<meta name="description" content="Lumora runs several Roblox accounts at the same time, each in its own tab – with split screen, party join, themes and an app lock. Free for Windows.">
+<meta property="og:title" content="Lumora – Multiple Roblox accounts, side by side">
+<meta property="og:description" content="Run several Roblox accounts at once, each in its own tab. Split screen, party join, themes, app lock. Free for Windows 10/11.">
+<meta property="og:image" content="img/start.jpg">
+<meta name="theme-color" content="#0b0e16">
+<link rel="icon" href="img/logo.png">
+<style>
+  :root {
+    --accent: #9db7ff; --accent-rgb: 157, 183, 255; --on-accent: #0d1020;
+    --bg: #05070c; --bg2: #0b0e16; --panel: #121624; --line: rgba(255,255,255,.08); --line2: rgba(255,255,255,.14);
+    --text: #f2f3f5; --muted: #a3a8b4; --faint: #6f747e;
+    --r: 14px; --ease: cubic-bezier(.2,.8,.2,1); --spring: cubic-bezier(.34,1.4,.64,1);
+    --font: "Segoe UI Variable Display", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+  #sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+  .glow { position: absolute; left: 50%; top: -260px; width: 1200px; height: 800px; margin-left: -600px; z-index: -1; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(var(--accent-rgb), .18), transparent 70%); }
+
+  /* nav */
+  nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px); background: rgba(5,7,12,.6); border-bottom: 1px solid var(--line); }
+  nav .wrap { height: 64px; display: flex; align-items: center; gap: 32px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); }
+  .brand img { width: 28px; height: 28px; border-radius: 8px; }
+  nav .links { display: flex; gap: 24px; font-size: 14px; color: var(--muted); margin-left: auto; }
+  nav .links a:hover { color: var(--text); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 44px; padding: 0 22px; border-radius: 12px; font-weight: 600; font-size: 15px;
+    background: rgba(255,255,255,.07); border: 1px solid var(--line); color: var(--text); transition: transform .25s var(--spring), filter .2s, background .2s; cursor: pointer; }
+  .btn:hover { background: rgba(255,255,255,.11); }
+  .btn:active { transform: scale(.97); }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: transparent; box-shadow: 0 10px 30px rgba(var(--accent-rgb), .3); }
+  .btn.primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .btn.big { height: 56px; padding: 0 30px; font-size: 17px; border-radius: 14px; }
+  .btn svg { width: 20px; height: 20px; }
+  nav .btn { height: 38px; padding: 0 16px; font-size: 14px; }
+
+  /* hero */
+  header.hero { position: relative; text-align: center; padding: 96px 0 40px; }
+  .logo-anim { display: block; width: 96px; height: 96px; margin: 0 auto 28px; filter: drop-shadow(0 0 30px rgba(var(--accent-rgb), .45)); }
+  .logo-anim .ring { fill: none; stroke: var(--accent); stroke-width: 13; stroke-linecap: round; stroke-dasharray: 1232; stroke-dashoffset: 1232;
+    transform: rotate(-90deg); transform-origin: 256px 256px; animation: draw 1.3s .2s var(--ease) forwards; }
+  .logo-anim .moon, .logo-anim .dot { fill: var(--accent); stroke: none; opacity: 0; transform-origin: 256px 256px; animation: pop .7s 1s var(--spring) forwards; }
+  .logo-anim .dot { animation-delay: 1.2s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes pop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 14px; border-radius: 15px; border: 1px solid var(--line2); color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+  .eyebrow i { width: 7px; height: 7px; border-radius: 50%; background: #8fe3b0; box-shadow: 0 0 0 3px rgba(143,227,176,.15); }
+  h1 { font-size: clamp(38px, 6vw, 68px); line-height: 1.05; letter-spacing: -.025em; font-weight: 700; max-width: 900px; margin: 0 auto; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), #e0b6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 620px; margin: 22px auto 34px; }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .meta { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-top: 18px; color: var(--faint); font-size: 13px; }
+  .meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .meta svg { width: 15px; height: 15px; }
+  .shot-hero { position: relative; margin: 64px auto 0; max-width: 1080px; border-radius: 18px; overflow: hidden; border: 1px solid var(--line2);
+    box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.03), 0 0 80px rgba(var(--accent-rgb), .12); transform: perspective(1600px) rotateX(8deg); transform-origin: top; transition: transform .8s var(--ease); }
+  .shot-hero.flat { transform: none; }
+  .shot-hero img { width: 100%; }
+
+  /* sections */
+  section { padding: 96px 0; position: relative; }
+  .sec-head { text-align: center; max-width: 680px; margin: 0 auto 52px; }
+  .sec-head small { color: var(--accent); letter-spacing: .14em; text-transform: uppercase; font-size: 12px; font-weight: 600; }
+  .sec-head h2 { font-size: clamp(28px, 4vw, 42px); letter-spacing: -.02em; line-height: 1.15; margin: 10px 0 12px; }
+  .sec-head p { color: var(--muted); }
+  .features { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .feat { padding: 26px; border-radius: var(--r); background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)); border: 1px solid var(--line);
+    transition: transform .35s var(--spring), border-color .25s, background .25s; }
+  .feat:hover { transform: translateY(-4px); border-color: var(--line2); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); }
+  .feat .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: rgba(var(--accent-rgb), .12); color: var(--accent); margin-bottom: 16px; }
+  .feat .ic svg { width: 22px; height: 22px; }
+  .feat h3 { font-size: 17px; margin-bottom: 6px; }
+  .feat p { color: var(--muted); font-size: 14.5px; }
+
+  /* screenshot tour */
+  .tabs { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+  .tabs button { font: inherit; font-size: 14px; height: 38px; padding: 0 16px; border-radius: 19px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; transition: all .2s; }
+  .tabs button:hover { color: var(--text); border-color: var(--line2); }
+  .tabs button.on { background: var(--accent); color: var(--on-accent); border-color: transparent; font-weight: 600; }
+  .viewer { position: relative; max-width: 1080px; margin: 0 auto; border-radius: 18px; overflow: hidden; border: 1px solid var(--line2); box-shadow: 0 30px 90px rgba(0,0,0,.55); aspect-ratio: 16 / 10; background: var(--bg2); }
+  .viewer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; opacity: 0; transform: scale(1.02); transition: opacity .5s var(--ease), transform .7s var(--ease); }
+  .viewer img.on { opacity: 1; transform: none; }
+  .caption { text-align: center; color: var(--muted); margin-top: 18px; min-height: 26px; }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; counter-reset: s; }
+  .step { padding: 26px; border-radius: var(--r); border: 1px solid var(--line); position: relative; }
+  .step::before { counter-increment: s; content: counter(s); position: absolute; top: 22px; right: 24px; font-size: 44px; font-weight: 700; color: rgba(255,255,255,.06); }
+  .step h3 { font-size: 17px; margin-bottom: 6px; }
+  .step p { color: var(--muted); font-size: 14.5px; }
+
+  /* faq */
+  .faq { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+  details { border: 1px solid var(--line); border-radius: var(--r); background: rgba(255,255,255,.02); transition: border-color .2s, background .2s; }
+  details[open] { border-color: var(--line2); background: rgba(255,255,255,.035); }
+  summary { list-style: none; cursor: pointer; padding: 18px 22px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-size: 22px; font-weight: 400; color: var(--muted); transition: transform .3s var(--spring); }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { padding: 0 22px 20px; color: var(--muted); font-size: 15px; }
+
+  /* changelog */
+  .changes { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  .chg { padding: 20px 22px; border-radius: var(--r); border: 1px solid var(--line); }
+  .chg b { font-size: 15px; } .chg span { color: var(--faint); font-size: 13px; margin-left: 8px; }
+  .chg p { color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+
+  /* final cta */
+  .final { text-align: center; padding: 72px 24px; border-radius: 24px; border: 1px solid var(--line2);
+    background: radial-gradient(ellipse at 50% 0%, rgba(var(--accent-rgb), .18), transparent 70%), var(--bg2); }
+  .final h2 { font-size: clamp(28px, 4vw, 44px); letter-spacing: -.02em; margin-bottom: 12px; }
+  .final p { color: var(--muted); margin-bottom: 28px; }
+
+  footer { padding: 48px 0 56px; color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); margin-top: 96px; }
+  footer .wrap { display: flex; gap: 24px; flex-wrap: wrap; justify-content: space-between; }
+  footer a { color: var(--muted); } footer a:hover { color: var(--text); }
+  footer .links { display: flex; gap: 20px; }
+
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (max-width: 760px) {
+    nav .links { display: none; } nav .btn { margin-left: auto; }
+    header.hero { padding-top: 64px; } section { padding: 64px 0; }
+    .shot-hero { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<div class="glow"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="img/logo.png" alt="">Lumora</a>
+    <div class="links"><a href="#features">Features</a><a href="#tour">Screenshots</a><a href="#faq">FAQ</a><a href="#changes">Changelog</a></div>
+    <a class="btn primary" href="#download" data-dl>Download</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <svg class="logo-anim" viewBox="0 0 512 512" aria-hidden="true">
+      <defs><mask id="cut"><rect width="512" height="512" fill="#fff"/><circle cx="312" cy="205" r="128" fill="#000"/></mask></defs>
+      <circle class="ring" cx="256" cy="256" r="196"/>
+      <g mask="url(#cut)"><circle class="moon" cx="256" cy="256" r="136"/></g>
+      <circle class="dot" cx="335" cy="176" r="19"/>
+    </svg>
+    <div class="eyebrow"><i></i><span id="verBadge">Free for Windows 10 &amp; 11</span></div>
+    <h1>All your Roblox accounts.<br><em>Side by side.</em></h1>
+    <p class="sub">Lumora runs several Roblox accounts at the same time – each in its own tab, in one clean window. Split screen, party join, themes and an app lock included.</p>
+    <div class="cta">
+      <a class="btn primary big" id="download" data-dl href="https://github.com/Anarqium/lumora-releases/releases/latest/download/Lumora-Setup.exe">
+        <svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download for Windows</a>
+      <a class="btn big" href="#tour">See it in action</a>
+    </div>
+    <div class="meta">
+      <span><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>Free</span>
+      <span><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Updates itself</span>
+      <span><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Logins stay encrypted on your PC</span>
+      <span><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>~5 MB</span>
+    </div>
+    <div class="shot-hero" id="heroShot"><img src="img/start.jpg" alt="Lumora start page with games, accounts and running tabs" width="2160" height="1350"></div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal"><small>Features</small><h2>Everything for playing on several accounts</h2><p>Built for people who play with alts, trade, or just want their friends' accounts in one place.</p></div>
+    <div class="features">
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="8" height="14" rx="2"/><rect x="13" y="5" width="8" height="14" rx="2"/></svg></div><h3>Tabs &amp; split screen</h3><p>Every account gets its own tab. Show one game, two side by side, or a grid of four – keyboard and mouse go where you click.</p></div>
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.6"/><path d="M17 14.5a5 5 0 0 1 4.5 5"/></svg></div><h3>Party join</h3><p>Send a whole category of accounts into the same server with one click – or let each join on its own.</p></div>
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="7" rx="1.5"/><rect x="4" y="13" width="16" height="7" rx="1.5"/></svg></div><h3>Server browser</h3><p>Pick servers by players and ping, join a friend's account's server, or paste private-server links.</p></div>
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 18a9 9 0 1 1 16 0"/><path d="M12 13l4-4"/></svg></div><h3>Saves your PC</h3><p>Hidden tabs drop to power-saving mode and can be muted. A live panel shows CPU, RAM and GPU per game.</p></div>
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><h3>Safe by design</h3><p>Logins are encrypted with your Windows account. Lock Lumora with Windows Hello or a PIN, and back everything up with your own password.</p></div>
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 4l1.6 4.4L18 10l-4.4 1.6L12 16l-1.6-4.4L6 10l4.4-1.6z"/></svg></div><h3>Make it yours</h3><p>12 themes, your own colors, corner radius and fonts, plus snow, stars, aurora, embers and more in the background.</p></div>
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg></div><h3>Roblox Home</h3><p>Open the Roblox app itself as any account to change avatars or chat with friends – without logging in and out.</p></div>
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.5"/></svg></div><h3>Screenshots &amp; stats</h3><p>Capture any game with one click, browse your gallery, and see how long you played on every account.</p></div>
+      <div class="feat reveal"><div class="ic"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div><h3>Auto-reconnect</h3><p>Disconnected? Lumora rejoins the same server automatically – and can restore your last session on start.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="tour">
+  <div class="wrap">
+    <div class="sec-head reveal"><small>Screenshots</small><h2>Take a look inside</h2></div>
+    <div class="tabs reveal" id="tabs"></div>
+    <div class="viewer reveal" id="viewer"></div>
+    <p class="caption" id="caption"></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal"><small>Get started</small><h2>Ready in a minute</h2></div>
+    <div class="steps">
+      <div class="step reveal"><h3>Install Lumora</h3><p>Download the installer and run it. No admin rights needed – Lumora updates itself from then on.</p></div>
+      <div class="step reveal"><h3>Add your accounts</h3><p>Sign in to each Roblox account once in a private window. Lumora keeps the login encrypted on your PC.</p></div>
+      <div class="step reveal"><h3>Play</h3><p>Search a game, pick who plays – or a whole party – and Lumora opens every account in its own tab.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal"><small>FAQ</small><h2>Questions &amp; answers</h2></div>
+    <div class="faq">
+      <details class="reveal"><summary>Is Lumora free?</summary><p>Yes. Lumora is free to download and use.</p></details>
+      <details class="reveal"><summary>Is it safe? What happens to my login?</summary><p>You sign in on Roblox's own login page. Lumora only stores the resulting session on your PC, encrypted with your Windows account – it is never sent to anyone else. You can additionally lock Lumora with Windows Hello or a PIN.</p></details>
+      <details class="reveal"><summary>Is this a cheat or an exploit?</summary><p>No. Lumora doesn't modify Roblox, inject anything into games or automate gameplay. It starts the normal Roblox client for each account and arranges the windows.</p></details>
+      <details class="reveal"><summary>Is this allowed by Roblox?</summary><p>Lumora is an independent tool and not affiliated with or endorsed by Roblox Corporation. Running several Roblox clients isn't an officially supported feature, so use it at your own discretion and always follow Roblox's Terms of Use.</p></details>
+      <details class="reveal"><summary>Which systems are supported?</summary><p>Windows 10 and Windows 11 (64-bit) with the Roblox app installed. Mac and mobile are not supported.</p></details>
+      <details class="reveal"><summary>How many accounts can I run?</summary><p>As many as your PC can handle. Tabs you aren't looking at use much less CPU and memory thanks to power-saving mode.</p></details>
+      <details class="reveal"><summary>How do updates work?</summary><p>When a new version is available, Lumora tells you at start and installs it with one click.</p></details>
+      <details class="reveal"><summary>Windows says "unknown publisher" – why?</summary><p>Lumora is a young project and isn't code-signed yet, so Windows SmartScreen may warn you the first time. Click "More info" → "Run anyway". Only download Lumora from this page.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="changes">
+  <div class="wrap">
+    <div class="sec-head reveal"><small>Changelog</small><h2>What's new</h2></div>
+    <div class="changes" id="changeList"></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="final reveal">
+    <h2>Play together. On one screen.</h2>
+    <p>Download Lumora for free and set it up in a minute.</p>
+    <a class="btn primary big" data-dl href="https://github.com/Anarqium/lumora-releases/releases/latest/download/Lumora-Setup.exe"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download for Windows</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Lumora. Not affiliated with, endorsed or sponsored by Roblox Corporation. "Roblox" is a trademark of Roblox Corporation.</span>
+    <span class="links"><a href="https://github.com/Anarqium/lumora-releases/releases">All releases</a><a href="#faq">FAQ</a></span>
+  </div>
+</footer>
+
+<script>
+  const DL = "https://github.com/Anarqium/lumora-releases/releases/latest/download/Lumora-Setup.exe";
+  document.querySelectorAll("[data-dl]").forEach(a => (a.href = DL));
+
+  // current version + changelog straight from GitHub (no other third parties)
+  fetch("https://api.github.com/repos/Anarqium/lumora-releases/releases?per_page=6")
+    .then(r => r.json())
+    .then(list => {
+      if (!Array.isArray(list) || !list.length) throw 0;
+      document.getElementById("verBadge").textContent = `Version ${list[0].tag_name.replace(/^v/, "")} · Free for Windows 10 & 11`;
+      document.getElementById("changeList").innerHTML = list.map(r => `<div class="chg reveal in"><b>${r.name || r.tag_name}</b><span>${new Date(r.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span><p>${(r.body || "").replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</p></div>`).join("");
+    })
+    .catch(() => { document.getElementById("changeList").innerHTML = '<div class="chg"><p>See <a href="https://github.com/Anarqium/lumora-releases/releases">all releases on GitHub</a>.</p></div>'; });
+
+  // screenshot tour
+  const SHOTS = [
+    ["start", "Start", "Your games, accounts and running tabs at a glance."],
+    ["party", "Party", "Send several accounts – or whole categories – into one server."],
+    ["accounts", "Accounts", "Organize accounts like a password manager: categories, notes, colors, Robux."],
+    ["perf", "Performance", "Live CPU, memory, GPU and network usage – per game tab."],
+    ["themes", "Themes", "12 themes, your own colors and animated backgrounds."],
+    ["lock", "App lock", "Windows Hello or a PIN keeps your accounts private."],
+  ];
+  const tabsEl = document.getElementById("tabs"), viewer = document.getElementById("viewer"), cap = document.getElementById("caption");
+  viewer.innerHTML = SHOTS.map(([id, , text]) => `<img src="img/${id}.jpg" alt="${text}" loading="lazy" data-id="${id}">`).join("");
+  tabsEl.innerHTML = SHOTS.map(([id, label]) => `<button data-id="${id}">${label}</button>`).join("");
+  let cur = 0, timer;
+  function show(i) {
+    cur = (i + SHOTS.length) % SHOTS.length;
+    const id = SHOTS[cur][0];
+    viewer.querySelectorAll("img").forEach(im => im.classList.toggle("on", im.dataset.id === id));
+    tabsEl.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.id === id));
+    cap.textContent = SHOTS[cur][2];
+    clearTimeout(timer); timer = setTimeout(() => show(cur + 1), 6000);
+  }
+  tabsEl.addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(SHOTS.findIndex(s => s[0] === b.dataset.id)); });
+  show(0);
+
+  // reveal on scroll, flatten the hero screenshot
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .12 });
+  document.querySelectorAll(".reveal").forEach((el, i) => { el.style.transitionDelay = (i % 4) * 60 + "ms"; io.observe(el); });
+  const hero = document.getElementById("heroShot");
+  addEventListener("scroll", () => hero.classList.toggle("flat", scrollY > 120), { passive: true });
+
+  // starfield
+  const cv = document.getElementById("sky"), ctx = cv.getContext("2d"); let W, H, stars = [];
+  function size() { const d = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+    stars = Array.from({ length: Math.round(W * H / 9000) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.2 + .2, p: Math.random() * 6.3, s: Math.random() * 1.4 + .3 })); }
+  function draw(t) { ctx.clearRect(0, 0, W, H); t /= 1000;
+    for (const s of stars) { ctx.fillStyle = `rgba(255,255,255,${.12 + .45 * (.5 + .5 * Math.sin(t * s.s + s.p))})`; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.3); ctx.fill(); }
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) requestAnimationFrame(draw); }
+  size(); addEventListener("resize", size); requestAnimationFrame(draw);
+</script>
+</body>
+</html>
